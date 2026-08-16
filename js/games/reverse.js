@@ -1,6 +1,6 @@
-import { waitOrAbort, buzz } from "../wait.js?v=17";
-import { renderPad, renderNext } from "../ui.js?v=17";
-import { loadSettings, saveSettings } from "../settings.js?v=17";
+import { waitOrAbort, buzz } from "../wait.js?v=18";
+import { renderPad, renderNext } from "../ui.js?v=18";
+import { loadSettings, saveSettings } from "../settings.js?v=18";
 
 const HIDE_MS = 2000;
 
@@ -30,7 +30,7 @@ export function startReverse(root, { onDone, signal }) {
     root.querySelector("#btn-start").addEventListener("click", () => runPlay());
   }
 
-  /** 番号を1回だけ縦に出して、2秒後に消す */
+  /** 番号を1回だけ横に出して、2秒後に消す */
   async function runPlay() {
     if (signal.aborted) return;
     saveSettings({ reverseRows: rows });
@@ -38,7 +38,7 @@ export function startReverse(root, { onDone, signal }) {
     const expected = [...nums].reverse().join("");
     root.innerHTML = `
       <p class="stage-hint" id="hint">見て覚えて</p>
-      <div class="num-rows" id="rows">${rowHtml(nums)}</div>
+      <div class="num-rows is-side" id="rows">${rowHtml(nums)}</div>
       <button type="button" class="text-btn" id="btn-show" hidden>表示</button>
       <div id="pad-slot"></div>
     `;
@@ -96,7 +96,7 @@ function makeNums(count) {
   return Array.from({ length: count }, () => 1 + Math.floor(Math.random() * 9));
 }
 
-/** 縦に並んだ番号のHTML */
+/** 横に並んだ番号のHTML */
 function rowHtml(nums) {
   return nums.map((n) => `<span>${n}</span>`).join("");
 }

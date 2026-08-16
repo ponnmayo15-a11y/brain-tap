@@ -315,8 +315,8 @@ body {
 .num-rows.is-side {
   flex-direction: row;
   flex-wrap: nowrap;
-  gap: 16px;
-  min-height: 80px;
+  gap: 20px;
+  min-height: 120px;
 }
 
 .num-rows span {
