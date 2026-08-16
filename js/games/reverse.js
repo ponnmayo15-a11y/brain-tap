@@ -1,23 +1,28 @@
-import { waitOrAbort, buzz } from "../wait.js?v=19";
-import { renderPad, renderNext } from "../ui.js?v=19";
-import { loadSettings, saveSettings } from "../settings.js?v=19";
+import { waitOrAbort, buzz } from "../wait.js?v=20";
+import { renderPad, renderNext } from "../ui.js?v=20";
+import { loadSettings, saveSettings, clampHide } from "../settings.js?v=20";
 
-const HIDE_MS = 2000;
-
-/** 逆唱。行数を選んでスタート。番号は1回だけ出し、2秒で消える */
+/** 逆唱。行数と表示時間を選んでスタート。番号は1回だけ出す */
 export function startReverse(root, { onDone, signal }) {
   const saved = loadSettings();
   let rows = saved.reverseRows >= 3 && saved.reverseRows <= 6 ? saved.reverseRows : 4;
+  let hideSec = clampHide(saved.reverseHide || 2);
   drawSetup();
 
-  /** 行数を選ぶ画面を出す */
+  /** 行数と表示時間を選ぶ画面を出す */
   function drawSetup() {
     if (signal.aborted) return;
     root.innerHTML = `
-      <p class="stage-hint">何行覚えるか選んでスタート</p>
+      <p class="stage-hint">設定してからスタート</p>
       <p class="setup-label">行数</p>
       <div class="choice-row" id="row-pick">
         ${[3, 4, 5, 6].map((n) => `<button type="button" class="choice${n === rows ? " is-on" : ""}" data-n="${n}">${n}行</button>`).join("")}
+      </div>
+      <p class="setup-label">表示時間</p>
+      <div class="speed-row">
+        <button type="button" class="choice" id="hide-down">−</button>
+        <strong id="hide-view">${hideSec.toFixed(1)}秒</strong>
+        <button type="button" class="choice" id="hide-up">＋</button>
       </div>
       <button type="button" class="btn-start" id="btn-start">スタート</button>
     `;
@@ -27,13 +32,21 @@ export function startReverse(root, { onDone, signal }) {
       rows = Number(btn.dataset.n);
       drawSetup();
     });
+    root.querySelector("#hide-down").addEventListener("click", () => {
+      hideSec = clampHide(hideSec - 0.5);
+      drawSetup();
+    });
+    root.querySelector("#hide-up").addEventListener("click", () => {
+      hideSec = clampHide(hideSec + 0.5);
+      drawSetup();
+    });
     root.querySelector("#btn-start").addEventListener("click", () => runPlay());
   }
 
-  /** 番号を1回だけ横に出して、2秒後に消す */
+  /** 番号を1回だけ横に出して、設定した秒数のあと消す */
   async function runPlay() {
     if (signal.aborted) return;
-    saveSettings({ reverseRows: rows });
+    saveSettings({ reverseRows: rows, reverseHide: hideSec });
     const nums = makeNums(rows);
     const expected = [...nums].reverse().join("");
     root.innerHTML = `
@@ -42,7 +55,7 @@ export function startReverse(root, { onDone, signal }) {
       <button type="button" class="text-btn" id="btn-show" hidden>表示</button>
       <div id="pad-slot"></div>
     `;
-    await waitOrAbort(HIDE_MS, signal);
+    await waitOrAbort(hideSec * 1000, signal);
     if (signal.aborted) return;
     hideAndAsk(nums, expected);
   }

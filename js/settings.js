@@ -26,3 +26,9 @@ export function clampCount(value) {
   const n = Math.round(Number(value));
   return Math.min(15, Math.max(5, n));
 }
+
+/** 逆唱の表示時間を 1.0〜4.0 の 0.5 刻みに丸める */
+export function clampHide(value) {
+  const halves = Math.round(Number(value) * 2);
+  return Math.min(8, Math.max(2, halves)) / 2;
+}
