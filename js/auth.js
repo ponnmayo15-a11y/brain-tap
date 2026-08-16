@@ -3,7 +3,8 @@ import { firebaseConfig, isFirebaseReady } from "./firebase-config.js";
 let auth = null;
 let currentUser = null;
 let googleProvider = null;
-let signInWithRedirectFn = null;
+let signInWithPopupFn = null;
+let popupResolver = null;
 let signOutFn = null;
 
 /** Firebase を起動し、ログイン状態の変化を見る */
@@ -15,29 +16,35 @@ export async function initAuth(onUser, onError) {
   const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js");
   const authMod = await import("https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js");
   const app = initializeApp(firebaseConfig);
-  auth = authMod.getAuth(app);
+  try {
+    auth = authMod.initializeAuth(app, {
+      persistence: authMod.indexedDBLocalPersistence,
+      popupRedirectResolver: authMod.browserPopupRedirectResolver,
+    });
+  } catch {
+    auth = authMod.getAuth(app);
+  }
   auth.languageCode = "ja";
   googleProvider = new authMod.GoogleAuthProvider();
-  signInWithRedirectFn = authMod.signInWithRedirect;
+  googleProvider.setCustomParameters({ prompt: "select_account" });
+  signInWithPopupFn = authMod.signInWithPopup;
+  popupResolver = authMod.browserPopupRedirectResolver;
   signOutFn = authMod.signOut;
-  try {
-    await authMod.getRedirectResult(auth);
-  } catch (error) {
-    console.warn("Googleログインの戻り処理", error);
-    if (onError) onError(error);
-  }
   authMod.onAuthStateChanged(auth, (user) => {
     currentUser = user;
     onUser(user);
   });
+  if (onError && !auth) onError(new Error("auth-init-failed"));
 }
 
-/** Googleでログインする（画面遷移。公開ページでも動きやすい） */
+/** Googleでログインする（同じページのポップアップ。GitHub Pages向き） */
 export async function loginGoogle() {
-  if (!auth || !signInWithRedirectFn) {
+  if (!auth || !signInWithPopupFn) {
     throw new Error("まだ Google ログインの準備ができていません");
   }
-  await signInWithRedirectFn(auth, googleProvider);
+  const result = await signInWithPopupFn(auth, googleProvider, popupResolver);
+  currentUser = result.user;
+  return result.user;
 }
 
 /** ログアウトする */
@@ -55,19 +62,23 @@ export function getUser() {
 /** 失敗理由を日本語にする */
 export function loginErrorText(error) {
   const code = error?.code || "";
+  const extra = [code, error?.message].filter(Boolean).join(" / ");
   if (code === "auth/unauthorized-domain") {
-    return "このサイトからのログインが、まだ許可されていません。承認済みドメインは ponnmayo15-a11y.github.io だけにしてください（https:// は付けない）。";
+    return `このサイトからのログインが許可されていません。${extra}`;
   }
-  if (code === "auth/popup-blocked" || code === "auth/popup-closed-by-user") {
-    return "ログイン画面が閉じられました。もう一度押してください。";
+  if (code === "auth/popup-blocked") {
+    return `ログイン窓がブロックされました。ブラウザの許可を出して、もう一度押してください。${extra}`;
+  }
+  if (code === "auth/popup-closed-by-user") {
+    return "ログイン窓が閉じられました。もう一度押してください。";
   }
   if (code === "auth/operation-not-allowed") {
-    return "Googleログインが、まだ有効になっていません。";
+    return `Googleログインが、まだ有効になっていません。${extra}`;
   }
   if (code === "auth/network-request-failed") {
-    return "通信に失敗しました。電波のよいところで、もう一度押してください。";
+    return `通信に失敗しました。${extra}`;
   }
-  return `ログインできませんでした。${code || error?.message || ""}`.trim();
+  return `ログインできませんでした。${extra || "原因不明"}`;
 }
 
 export { isFirebaseReady };
