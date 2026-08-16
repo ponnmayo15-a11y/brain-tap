@@ -5,10 +5,27 @@ const N = 2;
 const TRIALS = 12;
 const SHOW_MS = 2200;
 
-/** Nバック（2つ前と同じか）を1回始める */
-export async function startNback(root, { onDone, signal }) {
+/** Nバック（2つ前と同じか）。スタートを押してから始める */
+export function startNback(root, { onDone, signal }) {
+  root.innerHTML = `
+    <p class="stage-hint" id="hint">2つ前と同じ位置なら「同じ」</p>
+    <div id="grid-slot"></div>
+    <button type="button" class="btn-start" id="btn-start">スタート</button>
+    <div id="btn-slot"></div>
+  `;
+  renderGrid(root.querySelector("#grid-slot"));
+  root.querySelector("#btn-start").addEventListener("click", () => {
+    if (signal.aborted) return;
+    runPlay(root, onDone, signal);
+  });
+}
+
+/** スタート後の出題を回す */
+async function runPlay(root, onDone, signal) {
   const seq = makeSequence(N, N + TRIALS);
-  const cells = setupBoard(root);
+  const startBtn = root.querySelector("#btn-start");
+  if (startBtn) startBtn.remove();
+  const cells = [...root.querySelectorAll(".nb-grid i")];
   const hits = { ok: 0, total: 0 };
   for (let i = 0; i < seq.length; i += 1) {
     if (signal.aborted) return;
@@ -21,16 +38,6 @@ export async function startNback(root, { onDone, signal }) {
     }
   }
   finishNback(hits, onDone);
-}
-
-/** 3×3マスとボタン置き場を出す */
-function setupBoard(root) {
-  root.innerHTML = `
-    <p class="stage-hint" id="hint">2つ前と同じ位置なら「同じ」</p>
-    <div id="grid-slot"></div>
-    <div id="btn-slot"></div>
-  `;
-  return renderGrid(root.querySelector("#grid-slot"));
 }
 
 /** 約3割が「同じ」になる位置の列を作る */

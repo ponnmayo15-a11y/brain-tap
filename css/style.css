@@ -247,6 +247,81 @@ body {
   background: var(--gold);
 }
 
+.setup-label {
+  margin: 16px 0 8px;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+.choice-row,
+.speed-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.choice {
+  min-height: 56px;
+  min-width: 56px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(28, 25, 21, 0.08);
+  color: var(--ink);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  touch-action: manipulation;
+}
+
+.choice.is-on {
+  background: var(--ink);
+  color: var(--num);
+}
+
+.speed-row strong {
+  min-width: 72px;
+  text-align: center;
+  font-size: 22px;
+}
+
+.btn-start {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  min-height: 72px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--gold);
+  color: #fff;
+  font: inherit;
+  font-size: 24px;
+  font-weight: 700;
+  touch-action: manipulation;
+}
+
+.num-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+}
+
+.num-rows span {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.stage-num.is-wide {
+  font-size: 64px;
+}
+
 .qr-preview {
   display: block;
   width: min(100%, 320px);

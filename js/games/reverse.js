@@ -1,52 +1,85 @@
 import { waitOrAbort, buzz } from "../wait.js";
 import { renderPad } from "../ui.js";
+import { loadSettings, saveSettings } from "../settings.js";
 
-const LENGTH = 4;
-const SHOW_MS = 900;
-const GAP_MS = 250;
+const HIDE_MS = 2000;
 
-/** 逆唱を1回始める */
-export async function startReverse(root, { onDone, signal }) {
-  const nums = makeNums(LENGTH);
-  const expected = [...nums].reverse().join("");
-  root.innerHTML = `
-    <p class="stage-hint" id="hint">数字を覚えて、逆の順でタップ</p>
-    <div class="stage-num" id="num"></div>
-    <div id="pad-slot"></div>
-  `;
-  const numEl = root.querySelector("#num");
-  const hint = root.querySelector("#hint");
-  await showSequence(nums, numEl, hint, signal);
-  if (signal.aborted) return;
-  hint.textContent = "逆の順でタップ";
-  numEl.textContent = "";
-  let done = false;
-  renderPad(root.querySelector("#pad-slot"), {
-    prefix: " ",
-    hideOk: true,
-    onDigit: (value) => {
-      if (done || value.length < LENGTH) return;
-      done = true;
-      finishReverse(value, expected, nums, onDone);
-    },
-  });
+/** 逆唱。行数を選んでからスタート。2秒で消え、表示で元の番号を出せる */
+export function startReverse(root, { onDone, signal }) {
+  const saved = loadSettings();
+  let rows = saved.reverseRows >= 3 && saved.reverseRows <= 6 ? saved.reverseRows : 4;
+  drawSetup();
+
+  /** 行数を選ぶ画面を出す */
+  function drawSetup() {
+    if (signal.aborted) return;
+    root.innerHTML = `
+      <p class="stage-hint">何行覚えるか選んでスタート</p>
+      <p class="setup-label">行数</p>
+      <div class="choice-row" id="row-pick">
+        ${[3, 4, 5, 6].map((n) => `<button type="button" class="choice${n === rows ? " is-on" : ""}" data-n="${n}">${n}行</button>`).join("")}
+      </div>
+      <button type="button" class="btn-start" id="btn-start">スタート</button>
+    `;
+    root.querySelector("#row-pick").addEventListener("click", (event) => {
+      const btn = event.target.closest("button");
+      if (!btn) return;
+      rows = Number(btn.dataset.n);
+      drawSetup();
+    });
+    root.querySelector("#btn-start").addEventListener("click", () => runPlay());
+  }
+
+  /** 番号を出して、2秒後に消す */
+  async function runPlay() {
+    if (signal.aborted) return;
+    saveSettings({ reverseRows: rows });
+    const nums = makeNums(rows);
+    const expected = [...nums].reverse().join("");
+    root.innerHTML = `
+      <p class="stage-hint" id="hint">見て覚えて</p>
+      <div class="num-rows" id="rows">${rowHtml(nums)}</div>
+      <button type="button" class="text-btn" id="btn-show" hidden>表示</button>
+      <div id="pad-slot"></div>
+    `;
+    await waitOrAbort(HIDE_MS, signal);
+    if (signal.aborted) return;
+    hideAndAsk(nums, expected);
+  }
+
+  /** 番号を隠して、逆順入力と表示ボタンを出す */
+  function hideAndAsk(nums, expected) {
+    const hint = root.querySelector("#hint");
+    const rowsEl = root.querySelector("#rows");
+    const showBtn = root.querySelector("#btn-show");
+    hint.textContent = "逆の順でタップ";
+    rowsEl.innerHTML = "";
+    showBtn.hidden = false;
+    showBtn.addEventListener("click", () => {
+      rowsEl.innerHTML = rowHtml(nums);
+      hint.textContent = "最初の番号";
+    });
+    let done = false;
+    renderPad(root.querySelector("#pad-slot"), {
+      prefix: " ",
+      hideOk: true,
+      onDigit: (value) => {
+        if (done || value.length < nums.length) return;
+        done = true;
+        finishReverse(value, expected, nums, onDone);
+      },
+    });
+  }
 }
 
-/** 1〜9の数字列を作る */
+/** 1〜9を指定行だけ作る */
 function makeNums(count) {
   return Array.from({ length: count }, () => 1 + Math.floor(Math.random() * 9));
 }
 
-/** 数字を順番に出す */
-async function showSequence(nums, numEl, hint, signal) {
-  hint.textContent = "見て";
-  for (const n of nums) {
-    if (signal.aborted) return;
-    numEl.textContent = String(n);
-    await waitOrAbort(SHOW_MS, signal);
-    numEl.textContent = "";
-    await waitOrAbort(GAP_MS, signal);
-  }
+/** 縦に並んだ番号のHTML */
+function rowHtml(nums) {
+  return nums.map((n) => `<span>${n}</span>`).join("");
 }
 
 /** 逆順の正誤を判定する */
