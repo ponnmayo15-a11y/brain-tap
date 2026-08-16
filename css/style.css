@@ -306,10 +306,10 @@ body {
 .num-rows {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 14px;
   align-items: center;
   justify-content: center;
-  min-height: 180px;
+  min-height: 220px;
 }
 
 .num-rows.is-side {
@@ -320,9 +320,10 @@ body {
 }
 
 .num-rows span {
-  font-size: 36px;
+  display: block;
+  font-size: 48px;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .stage-num.is-wide {

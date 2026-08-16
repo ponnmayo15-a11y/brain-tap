@@ -1,6 +1,6 @@
-import { waitOrAbort, buzz } from "../wait.js";
-import { renderGrid, lightCell, renderNext } from "../ui.js";
-import { loadSettings, saveSettings } from "../settings.js";
+import { waitOrAbort, buzz } from "../wait.js?v=17";
+import { renderGrid, lightCell, renderNext } from "../ui.js?v=17";
+import { loadSettings, saveSettings } from "../settings.js?v=17";
 
 const SOUNDS = ["あ", "い", "う", "え", "か", "さ", "た", "な"];
 const TRIALS = 16;

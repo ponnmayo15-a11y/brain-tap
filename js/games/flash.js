@@ -1,6 +1,6 @@
-import { waitOrAbort, buzz } from "../wait.js";
-import { renderPad, renderNext } from "../ui.js";
-import { loadSettings, saveSettings, clampSpeed, clampCount } from "../settings.js";
+import { waitOrAbort, buzz } from "../wait.js?v=17";
+import { renderPad, renderNext } from "../ui.js?v=17";
+import { loadSettings, saveSettings, clampSpeed, clampCount } from "../settings.js?v=17";
 
 const GAP_MS = 150;
 
