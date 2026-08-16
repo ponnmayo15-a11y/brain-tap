@@ -1,6 +1,6 @@
-import { waitOrAbort, buzz } from "../wait.js?v=18";
-import { renderPad, renderNext } from "../ui.js?v=18";
-import { loadSettings, saveSettings } from "../settings.js?v=18";
+import { waitOrAbort, buzz } from "../wait.js?v=19";
+import { renderPad, renderNext } from "../ui.js?v=19";
+import { loadSettings, saveSettings } from "../settings.js?v=19";
 
 const HIDE_MS = 2000;
 
@@ -38,7 +38,7 @@ export function startReverse(root, { onDone, signal }) {
     const expected = [...nums].reverse().join("");
     root.innerHTML = `
       <p class="stage-hint" id="hint">見て覚えて</p>
-      <div class="num-rows is-side" id="rows">${rowHtml(nums)}</div>
+      <p class="num-line" id="rows">${nums.join(" ")}</p>
       <button type="button" class="text-btn" id="btn-show" hidden>表示</button>
       <div id="pad-slot"></div>
     `;
@@ -56,7 +56,7 @@ export function startReverse(root, { onDone, signal }) {
     rowsEl.innerHTML = "";
     showBtn.hidden = false;
     showBtn.addEventListener("click", () => {
-      rowsEl.innerHTML = rowHtml(nums);
+      rowsEl.textContent = nums.join(" ");
       hint.textContent = "最初の番号";
       showBtn.hidden = true;
     }, { once: true });
@@ -94,9 +94,4 @@ export function startReverse(root, { onDone, signal }) {
 /** 1〜9を指定行だけ作る */
 function makeNums(count) {
   return Array.from({ length: count }, () => 1 + Math.floor(Math.random() * 9));
-}
-
-/** 横に並んだ番号のHTML */
-function rowHtml(nums) {
-  return nums.map((n) => `<span>${n}</span>`).join("");
 }
