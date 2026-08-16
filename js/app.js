@@ -29,7 +29,6 @@ async function boot() {
 /** ボタンのクリックを結びつける */
 function bindClicks() {
   document.getElementById("btn-login").addEventListener("click", onLogin);
-  document.getElementById("btn-practice").addEventListener("click", () => openHome());
   document.getElementById("btn-logout").addEventListener("click", onLogout);
   document.getElementById("play-quit").addEventListener("click", quitPlay);
   document.getElementById("btn-again").addEventListener("click", () => {
@@ -48,7 +47,7 @@ async function onLogin() {
   const err = document.getElementById("login-error");
   err.textContent = "";
   if (!isFirebaseReady()) {
-    err.textContent = "まだ Google ログインの準備ができていません。練習する、で先に遊べます。";
+    err.textContent = "まだ Google ログインの準備ができていません。設定が終わるまで少し待ってください。";
     return;
   }
   try {
@@ -79,11 +78,13 @@ function onUser(user) {
 /** ホームを開いて記録を出す */
 async function openHome() {
   const user = getUser();
-  const name = user?.displayName || "練習モード";
-  document.getElementById("hello").textContent = name;
-  document.getElementById("save-place").textContent = user
-    ? "記録はクラウドに残ります。別の端末でも見られます。"
-    : "今は練習です。記録はこの端末だけに残ります。";
+  if (!user) {
+    show("screen-login");
+    return;
+  }
+  document.getElementById("hello").textContent = user.displayName || "ログイン中";
+  document.getElementById("save-place").textContent =
+    "記録はクラウドに残ります。別の端末でも見られます。";
   show("screen-home");
   const scores = await loadScores();
   drawBests(scores);
@@ -134,10 +135,10 @@ async function finishPlay(result) {
 function updateLoginHint() {
   const hint = document.getElementById("login-hint");
   if (isFirebaseReady()) {
-    hint.textContent = "Googleでログインすると、点数がクラウドに残ります。";
+    hint.textContent = "Googleでログインしてから、課題を選びます。";
     return;
   }
-  hint.textContent = "いまは練習モードです。Googleログインは、設定が終わってから使えます。";
+  hint.textContent = "Googleログインの設定が終わると、ここから入れます。";
 }
 
 boot();
