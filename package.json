@@ -1,0 +1,9 @@
+{
+  "name": "brain-tap",
+  "private": true,
+  "type": "module",
+  "description": "指でやる、短い脳トレ（フラッシュ暗算・逆唱・Nバック）",
+  "scripts": {
+    "start": "npx --yes serve . -l 5175"
+  }
+}
