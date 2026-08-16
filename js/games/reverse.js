@@ -14,10 +14,10 @@ export function startReverse(root, { onDone, signal }) {
   function drawSetup() {
     if (signal.aborted) return;
     root.innerHTML = `
-      <p class="stage-hint">何個覚えるか選んでスタート</p>
-      <p class="setup-label">個数</p>
+      <p class="stage-hint">何行覚えるか選んでスタート</p>
+      <p class="setup-label">行数</p>
       <div class="choice-row" id="row-pick">
-        ${[3, 4, 5, 6].map((n) => `<button type="button" class="choice${n === rows ? " is-on" : ""}" data-n="${n}">${n}個</button>`).join("")}
+        ${[3, 4, 5, 6].map((n) => `<button type="button" class="choice${n === rows ? " is-on" : ""}" data-n="${n}">${n}行</button>`).join("")}
       </div>
       <button type="button" class="btn-start" id="btn-start">スタート</button>
     `;
@@ -30,7 +30,7 @@ export function startReverse(root, { onDone, signal }) {
     root.querySelector("#btn-start").addEventListener("click", () => runPlay());
   }
 
-  /** 番号を横に出して、2秒後に消す */
+  /** 番号を縦に出して、2秒後に消す */
   async function runPlay() {
     if (signal.aborted) return;
     saveSettings({ reverseRows: rows });
@@ -38,7 +38,7 @@ export function startReverse(root, { onDone, signal }) {
     const expected = [...nums].reverse().join("");
     root.innerHTML = `
       <p class="stage-hint" id="hint">見て覚えて</p>
-      <div class="num-rows is-side" id="rows">${rowHtml(nums)}</div>
+      <div class="num-rows" id="rows">${rowHtml(nums)}</div>
       <button type="button" class="text-btn" id="btn-show" hidden>表示</button>
       <div id="pad-slot"></div>
     `;
@@ -85,7 +85,7 @@ function makeNums(count) {
   return Array.from({ length: count }, () => 1 + Math.floor(Math.random() * 9));
 }
 
-/** 横に並んだ番号のHTML */
+/** 縦に並んだ番号のHTML */
 function rowHtml(nums) {
   return nums.map((n) => `<span>${n}</span>`).join("");
 }
