@@ -322,6 +322,60 @@ body {
   font-size: 64px;
 }
 
+.progress {
+  height: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: #d9d0c2;
+  overflow: hidden;
+}
+
+.progress i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--gold);
+}
+
+.n-label {
+  margin: 8px 0 4px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.sound-now {
+  margin: 0 0 8px;
+  min-height: 36px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.dual-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-top: 20px;
+}
+
+.dual-btns button {
+  min-height: 104px;
+  border: 0;
+  border-radius: 8px;
+  background: #1e3a5f;
+  color: #fff;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  touch-action: manipulation;
+}
+
+.dual-btns button.is-on {
+  background: var(--gold);
+  color: var(--ink);
+}
+
 .qr-preview {
   display: block;
   width: min(100%, 320px);
