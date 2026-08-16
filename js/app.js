@@ -1,4 +1,4 @@
-import { initAuth, loginGoogle, logout, getUser, isFirebaseReady } from "./auth.js";
+import { initAuth, loginGoogle, logout, getUser, isFirebaseReady, loginErrorText } from "./auth.js";
 import { saveScore, loadScores } from "./scores.js";
 import { startFlash } from "./games/flash.js";
 import { startReverse } from "./games/reverse.js";
@@ -23,7 +23,9 @@ function show(id) {
 async function boot() {
   bindClicks();
   updateLoginHint();
-  await initAuth(onUser);
+  await initAuth(onUser, (error) => {
+    document.getElementById("login-error").textContent = loginErrorText(error);
+  });
 }
 
 /** ボタンのクリックを結びつける */
@@ -53,7 +55,7 @@ async function onLogin() {
   try {
     await loginGoogle();
   } catch (error) {
-    err.textContent = "ログインできませんでした。もう一度押してみてください。";
+    err.textContent = loginErrorText(error);
     console.warn(error);
   }
 }
