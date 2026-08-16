@@ -3,7 +3,7 @@
  * 値はチャットで受け取り、エージェントがここに書く。
  */
 export const firebaseConfig = {
-  apiKey: "AIzaSyDMRNnGppU5-l9t_LKmjRQ0C6C0bMLROI8",
+  apiKey: "AIzaSyDMRNnGppU5-l9t_LKmjRQ0C6C0bMlROI8",
   authDomain: "brain-tap-3cbf0.firebaseapp.com",
   projectId: "brain-tap-3cbf0",
   storageBucket: "brain-tap-3cbf0.firebasestorage.app",

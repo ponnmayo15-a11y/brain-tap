@@ -1,4 +1,4 @@
-import { firebaseConfig, isFirebaseReady } from "./firebase-config.js";
+import { firebaseConfig, isFirebaseReady } from "./firebase-config.js?v=7";
 import { getUser } from "./auth.js";
 
 const LOCAL_KEY = "brain-tap-scores";

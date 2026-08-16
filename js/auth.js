@@ -1,4 +1,4 @@
-import { firebaseConfig, isFirebaseReady } from "./firebase-config.js";
+import { firebaseConfig, isFirebaseReady } from "./firebase-config.js?v=7";
 
 let auth = null;
 let currentUser = null;
