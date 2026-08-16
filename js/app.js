@@ -1,4 +1,3 @@
-import { initAuth, loginGoogle, logout, getUser, isFirebaseReady, loginErrorText } from "./auth.js";
 import { saveScore, loadScores } from "./scores.js";
 import { startFlash } from "./games/flash.js";
 import { startReverse } from "./games/reverse.js";
@@ -22,16 +21,11 @@ function show(id) {
 /** 起動時のつなぎ込み */
 async function boot() {
   bindClicks();
-  updateLoginHint();
-  await initAuth(onUser, (error) => {
-    document.getElementById("login-error").textContent = loginErrorText(error);
-  });
+  await openHome();
 }
 
 /** ボタンのクリックを結びつける */
 function bindClicks() {
-  document.getElementById("btn-login").addEventListener("click", onLogin);
-  document.getElementById("btn-logout").addEventListener("click", onLogout);
   document.getElementById("play-quit").addEventListener("click", quitPlay);
   document.getElementById("btn-again").addEventListener("click", () => {
     const game = document.getElementById("btn-again").dataset.game;
@@ -44,53 +38,8 @@ function bindClicks() {
   });
 }
 
-/** Googleログインを押したとき */
-async function onLogin() {
-  const err = document.getElementById("login-error");
-  const btn = document.getElementById("btn-login");
-  err.textContent = "Googleの画面を開いています…";
-  btn.disabled = true;
-  if (!isFirebaseReady()) {
-    err.textContent = "まだ Google ログインの準備ができていません。設定が終わるまで少し待ってください。";
-    btn.disabled = false;
-    return;
-  }
-  try {
-    await loginGoogle();
-  } catch (error) {
-    err.textContent = loginErrorText(error);
-    btn.disabled = false;
-    console.warn(error);
-  }
-}
-
-/** ログアウト */
-async function onLogout() {
-  await logout();
-  show("screen-login");
-}
-
-/** ログイン状態が変わったとき */
-function onUser(user) {
-  if (user) {
-    openHome();
-    return;
-  }
-  if (!document.getElementById("screen-play").classList.contains("is-on")) {
-    show("screen-login");
-  }
-}
-
 /** ホームを開いて記録を出す */
 async function openHome() {
-  const user = getUser();
-  if (!user) {
-    show("screen-login");
-    return;
-  }
-  document.getElementById("hello").textContent = user.displayName || "ログイン中";
-  document.getElementById("save-place").textContent =
-    "記録はクラウドに残ります。別の端末でも見られます。";
   show("screen-home");
   const scores = await loadScores();
   drawBests(scores);
@@ -135,16 +84,6 @@ async function finishPlay(result) {
   document.getElementById("result-points").textContent = `${result.points} 点`;
   document.getElementById("result-detail").textContent = result.detail || "";
   show("screen-result");
-}
-
-/** ログイン画面の説明文を、準備状況に合わせて変える */
-function updateLoginHint() {
-  const hint = document.getElementById("login-hint");
-  if (isFirebaseReady()) {
-    hint.textContent = "Googleでログインしてから、課題を選びます。";
-    return;
-  }
-  hint.textContent = "Googleログインの設定が終わると、ここから入れます。";
 }
 
 boot();

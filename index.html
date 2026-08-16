@@ -10,26 +10,11 @@
 </head>
 <body>
   <main class="app">
-    <section id="screen-login" class="screen is-on">
+    <section id="screen-home" class="screen is-on">
       <header class="brand">
-        <small>brain-tap v7</small>
+        <small>brain-tap</small>
         <h1>頭の準備運動</h1>
-        <p id="login-hint">Googleでログインしてから、課題を選びます。</p>
-      </header>
-      <button class="menu menu-main" type="button" id="btn-login">
-        <span>Googleでログイン</span>
-        <small>ログインしてから遊ぶ</small>
-      </button>
-      <p class="error" id="login-error"></p>
-      <a class="text-btn" href="qr.html">QRコード</a>
-      <p class="disclaimer">これは医療ではありません。頭の体操です。</p>
-    </section>
-
-    <section id="screen-home" class="screen">
-      <header class="brand">
-        <small id="hello"> </small>
-        <h1>どれをやる</h1>
-        <p id="save-place"></p>
+        <p>課題を選んでください。記録はこの端末だけに残ります。</p>
       </header>
       <button class="menu" type="button" data-game="flash">
         <span>フラッシュ暗算</span>
@@ -43,7 +28,7 @@
         <span>Nバック</span>
         <small id="best-nback">まだ記録なし</small>
       </button>
-      <button class="text-btn" type="button" id="btn-logout">ログアウト</button>
+      <a class="text-btn" href="qr.html">QRコード</a>
       <p class="disclaimer">これは医療ではありません。頭の体操です。</p>
     </section>
 
@@ -72,6 +57,6 @@
       </button>
     </section>
   </main>
-  <script type="module" src="js/app.js?v=7"></script>
+  <script type="module" src="js/app.js?v=8"></script>
 </body>
 </html>
