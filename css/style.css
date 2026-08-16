@@ -312,6 +312,13 @@ body {
   min-height: 180px;
 }
 
+.num-rows.is-side {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 16px;
+  min-height: 80px;
+}
+
 .num-rows span {
   font-size: 36px;
   font-weight: 700;
