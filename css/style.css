@@ -329,6 +329,29 @@ body {
   font-size: 64px;
 }
 
+.judge-mark {
+  margin: 28px 0 8px;
+  text-align: center;
+  font-size: 96px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.judge-mark.is-ok {
+  color: var(--same);
+}
+
+.judge-mark.is-ng {
+  color: var(--diff);
+}
+
+.judge-answer {
+  margin: 0 0 20px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+}
+
 .progress {
   height: 10px;
   margin-bottom: 8px;

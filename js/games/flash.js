@@ -87,7 +87,7 @@ export function startFlash(root, { onDone, signal }) {
     });
   }
 
-  /** 正誤だけ判定し、答えは出さずに次へ進める */
+  /** ○×と正解を出して、同じ画面で次へ進める */
   function afterAnswer(value, sum) {
     const ok = Number(value) === sum;
     buzz(ok);
@@ -97,9 +97,12 @@ export function startFlash(root, { onDone, signal }) {
       maxPoints: 100,
       stay: true,
     });
-    root.querySelector("#hint").textContent = " ";
-    root.querySelector("#num").textContent = "";
-    renderNext(root.querySelector("#pad-slot"), () => runPlay());
+    root.innerHTML = `
+      <p class="judge-mark ${ok ? "is-ok" : "is-ng"}">${ok ? "○" : "×"}</p>
+      <p class="judge-answer">正解 ${sum}</p>
+      <div id="next-slot"></div>
+    `;
+    renderNext(root.querySelector("#next-slot"), () => runPlay());
   }
 }
 
