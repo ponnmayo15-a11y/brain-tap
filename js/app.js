@@ -47,15 +47,19 @@ function bindClicks() {
 /** Googleログインを押したとき */
 async function onLogin() {
   const err = document.getElementById("login-error");
-  err.textContent = "";
+  const btn = document.getElementById("btn-login");
+  err.textContent = "Googleの画面を開いています…";
+  btn.disabled = true;
   if (!isFirebaseReady()) {
     err.textContent = "まだ Google ログインの準備ができていません。設定が終わるまで少し待ってください。";
+    btn.disabled = false;
     return;
   }
   try {
     await loginGoogle();
   } catch (error) {
     err.textContent = loginErrorText(error);
+    btn.disabled = false;
     console.warn(error);
   }
 }

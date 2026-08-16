@@ -4,6 +4,7 @@ let auth = null;
 let currentUser = null;
 let googleProvider = null;
 let signInWithPopupFn = null;
+let signInWithRedirectFn = null;
 let popupResolver = null;
 let signOutFn = null;
 
@@ -28,23 +29,42 @@ export async function initAuth(onUser, onError) {
   googleProvider = new authMod.GoogleAuthProvider();
   googleProvider.setCustomParameters({ prompt: "select_account" });
   signInWithPopupFn = authMod.signInWithPopup;
+  signInWithRedirectFn = authMod.signInWithRedirect;
   popupResolver = authMod.browserPopupRedirectResolver;
   signOutFn = authMod.signOut;
+  try {
+    await authMod.getRedirectResult(auth);
+  } catch (error) {
+    console.warn("Googleログインの戻り処理", error);
+    if (onError) onError(error);
+  }
   authMod.onAuthStateChanged(auth, (user) => {
     currentUser = user;
     onUser(user);
   });
-  if (onError && !auth) onError(new Error("auth-init-failed"));
 }
 
-/** Googleでログインする（同じページのポップアップ。GitHub Pages向き） */
+/** Googleでログインする（スマホは画面遷移。パソコンは窓） */
 export async function loginGoogle() {
-  if (!auth || !signInWithPopupFn) {
+  if (!auth) {
+    throw new Error("まだ Google ログインの準備ができていません");
+  }
+  if (isPhone() && signInWithRedirectFn) {
+    await signInWithRedirectFn(auth, googleProvider);
+    return;
+  }
+  if (!signInWithPopupFn) {
     throw new Error("まだ Google ログインの準備ができていません");
   }
   const result = await signInWithPopupFn(auth, googleProvider, popupResolver);
   currentUser = result.user;
   return result.user;
+}
+
+/** スマホかどうかをざっくり判定する */
+function isPhone() {
+  return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 }
 
 /** ログアウトする */
