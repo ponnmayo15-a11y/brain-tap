@@ -5,7 +5,7 @@ import { startNback } from "./games/nback.js";
 
 const GAMES = {
   flash: { title: "フラッシュ暗算", start: startFlash },
-  reverse: { title: "ぎゃくしょう", start: startReverse },
+  reverse: { title: "逆唱", start: startReverse },
   nback: { title: "Nバック", start: startNback },
 };
 
