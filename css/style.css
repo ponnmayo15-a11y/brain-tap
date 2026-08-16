@@ -344,22 +344,49 @@ body {
   font-weight: 700;
 }
 
+.dual-play {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 90px);
+}
+
+.n-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin: 8px 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
 .sound-now {
-  margin: 0 0 8px;
+  margin: 0;
+  min-width: 2em;
   min-height: 36px;
   text-align: center;
   font-size: 32px;
   font-weight: 700;
 }
 
+.dual-play #grid-slot {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .dual-btns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
   gap: 4px;
-  margin-top: 20px;
+  margin-top: auto;
 }
 
 .dual-btns button {
+  flex: 1;
   min-height: 104px;
   border: 0;
   border-radius: 8px;

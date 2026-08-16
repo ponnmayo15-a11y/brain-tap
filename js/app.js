@@ -5,7 +5,7 @@ import { startNback } from "./games/nback.js";
 
 const GAMES = {
   flash: { title: "フラッシュ暗算", start: startFlash },
-  reverse: { title: "逆唱", start: startReverse },
+  reverse: { title: "ぎゃくしょう", start: startReverse },
   nback: { title: "Nバック", start: startNback },
 };
 
@@ -80,6 +80,7 @@ function quitPlay() {
 /** 1回分の結果を保存して結果画面へ */
 async function finishPlay(result) {
   await saveScore(result);
+  if (result.stay) return;
   document.getElementById("result-message").textContent = result.message;
   document.getElementById("result-points").textContent = `${result.points} 点`;
   document.getElementById("result-detail").textContent = result.detail || "";

@@ -1,8 +1,7 @@
 import { waitOrAbort, buzz } from "../wait.js";
-import { renderPad } from "../ui.js";
-import { loadSettings, saveSettings, clampSpeed } from "../settings.js";
+import { renderPad, renderNext } from "../ui.js";
+import { loadSettings, saveSettings, clampSpeed, clampCount } from "../settings.js";
 
-const COUNT = 5;
 const GAP_MS = 150;
 
 /** フラッシュ暗算。設定のあと、スタートで始める */
@@ -10,9 +9,10 @@ export function startFlash(root, { onDone, signal }) {
   const saved = loadSettings();
   let digits = saved.flashDigits === 2 || saved.flashDigits === 3 ? saved.flashDigits : 1;
   let speed = clampSpeed(saved.flashSpeed || 0.7);
+  let count = clampCount(saved.flashCount || 5);
   drawSetup();
 
-  /** 桁と速さを選ぶ画面を出す */
+  /** 桁・個数・速さを選ぶ画面を出す */
   function drawSetup() {
     if (signal.aborted) return;
     root.innerHTML = `
@@ -20,6 +20,12 @@ export function startFlash(root, { onDone, signal }) {
       <p class="setup-label">桁数</p>
       <div class="choice-row" id="digit-row">
         ${[1, 2, 3].map((n) => `<button type="button" class="choice${n === digits ? " is-on" : ""}" data-d="${n}">${n}桁</button>`).join("")}
+      </div>
+      <p class="setup-label">数</p>
+      <div class="speed-row">
+        <button type="button" class="choice" id="count-down">−</button>
+        <strong id="count-view">${count}個</strong>
+        <button type="button" class="choice" id="count-up">＋</button>
       </div>
       <p class="setup-label">表示の速さ</p>
       <div class="speed-row">
@@ -33,6 +39,14 @@ export function startFlash(root, { onDone, signal }) {
       const btn = event.target.closest("button");
       if (!btn) return;
       digits = Number(btn.dataset.d);
+      drawSetup();
+    });
+    root.querySelector("#count-down").addEventListener("click", () => {
+      count = clampCount(count - 1);
+      drawSetup();
+    });
+    root.querySelector("#count-up").addEventListener("click", () => {
+      count = clampCount(count + 1);
       drawSetup();
     });
     root.querySelector("#speed-down").addEventListener("click", () => {
@@ -49,8 +63,8 @@ export function startFlash(root, { onDone, signal }) {
   /** 数字を流して、合計を聞く */
   async function runPlay() {
     if (signal.aborted) return;
-    saveSettings({ flashDigits: digits, flashSpeed: speed });
-    const nums = makeNums(COUNT, digits);
+    saveSettings({ flashDigits: digits, flashSpeed: speed, flashCount: count });
+    const nums = makeNums(count, digits);
     const sum = nums.reduce((a, b) => a + b, 0);
     root.innerHTML = `
       <p class="stage-hint" id="hint">見て</p>
@@ -68,9 +82,24 @@ export function startFlash(root, { onDone, signal }) {
       onOk: (value) => {
         if (done) return;
         done = true;
-        finishFlash(value, sum, nums, onDone);
+        afterAnswer(value, sum);
       },
     });
+  }
+
+  /** 正誤だけ判定し、答えは出さずに次へ進める */
+  function afterAnswer(value, sum) {
+    const ok = Number(value) === sum;
+    buzz(ok);
+    onDone({
+      game: "flash",
+      points: ok ? 100 : 0,
+      maxPoints: 100,
+      stay: true,
+    });
+    root.querySelector("#hint").textContent = " ";
+    root.querySelector("#num").textContent = "";
+    renderNext(root.querySelector("#pad-slot"), () => runPlay());
   }
 }
 
@@ -90,17 +119,4 @@ async function showSequence(nums, numEl, showMs, signal) {
     numEl.textContent = "";
     await waitOrAbort(GAP_MS, signal);
   }
-}
-
-/** 合計の正誤を判定する */
-function finishFlash(value, sum, nums, onDone) {
-  const ok = Number(value) === sum;
-  buzz(ok);
-  onDone({
-    game: "flash",
-    points: ok ? 100 : 0,
-    maxPoints: 100,
-    message: ok ? "正解" : `正解は ${sum}`,
-    detail: `出た数: ${nums.join(" + ")} = ${sum}`,
-  });
 }

@@ -65,3 +65,9 @@ export function renderGrid(mount) {
 export function lightCell(cells, index) {
   cells.forEach((cell, i) => cell.classList.toggle("is-on", i === index));
 }
+
+/** 次ボタンを出す */
+export function renderNext(mount, onNext) {
+  mount.innerHTML = `<button type="button" class="btn-start" id="btn-next">次</button>`;
+  mount.querySelector("#btn-next").addEventListener("click", onNext);
+}

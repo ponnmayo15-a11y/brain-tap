@@ -1,5 +1,5 @@
 import { waitOrAbort, buzz } from "../wait.js";
-import { renderSameDiff, renderGrid, lightCell } from "../ui.js";
+import { renderSameDiff, renderGrid, lightCell, renderNext } from "../ui.js";
 
 const N = 2;
 const TRIALS = 12;
@@ -37,7 +37,15 @@ async function runPlay(root, onDone, signal) {
       if (result) hits.ok += 1;
     }
   }
-  finishNback(hits, onDone);
+  finishNback(hits, onDone, () => {
+    root.innerHTML = `
+      <p class="stage-hint" id="hint">2つ前と同じ位置なら「同じ」</p>
+      <div id="grid-slot"></div>
+      <div id="btn-slot"></div>
+    `;
+    renderGrid(root.querySelector("#grid-slot"));
+    runPlay(root, onDone, signal);
+  }, root);
 }
 
 /** 約3割が「同じ」になる位置の列を作る */
@@ -99,14 +107,14 @@ function askSame(slot, target, signal) {
   });
 }
 
-/** 正答率を点数にして返す */
-function finishNback(hits, onDone) {
+/** 点数を保存し、次へ進める */
+function finishNback(hits, onDone, onNext, root) {
   const points = hits.total ? Math.round((100 * hits.ok) / hits.total) : 0;
   onDone({
     game: "nback",
     points,
     maxPoints: 100,
-    message: `${hits.ok} / ${hits.total} 問正解`,
-    detail: "2つ前と同じ位置かを判定",
+    stay: true,
   });
+  renderNext(root, onNext);
 }

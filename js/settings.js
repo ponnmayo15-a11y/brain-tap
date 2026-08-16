@@ -20,3 +20,9 @@ export function clampSpeed(value) {
   const tenths = Math.round(Number(value) * 10);
   return Math.min(20, Math.max(5, tenths)) / 10;
 }
+
+/** 個数を 5〜15 に丸める */
+export function clampCount(value) {
+  const n = Math.round(Number(value));
+  return Math.min(15, Math.max(5, n));
+}

@@ -1,5 +1,5 @@
 import { waitOrAbort, buzz } from "../wait.js";
-import { renderGrid, lightCell } from "../ui.js";
+import { renderGrid, lightCell, renderNext } from "../ui.js";
 import { loadSettings, saveSettings } from "../settings.js";
 
 const SOUNDS = ["あ", "い", "う", "え", "か", "さ", "た", "な"];
@@ -43,7 +43,7 @@ export function startReverse(root, { onDone, signal }) {
     const total = n + TRIALS;
     const sounds = makeStream(n, total, SOUNDS.length);
     const positions = makeStream(n, total, 9);
-    drawBoard(n);
+    drawBoard(root, n);
     const cells = [...root.querySelectorAll(".nb-grid i")];
     const hits = { ok: 0, total: 0 };
     for (let i = 0; i < total; i += 1) {
@@ -58,21 +58,24 @@ export function startReverse(root, { onDone, signal }) {
         hits.ok += result;
       }
     }
-    finishDual(hits, n, onDone);
+    finishDual(hits, n, onDone, () => runPlay(), root);
   }
 }
 
-/** プレイ画面を出す */
-function drawBoard(n) {
-  const root = document.getElementById("play-stage");
+/** プレイ画面を出す（音と位置は横並び） */
+function drawBoard(root, n) {
   root.innerHTML = `
-    <div class="progress"><i id="bar"></i></div>
-    <p class="n-label">N = ${n}</p>
-    <p class="sound-now" id="sound-now"> </p>
-    <div id="grid-slot"></div>
-    <div class="dual-btns">
-      <button type="button" id="btn-sound">サウンド</button>
-      <button type="button" id="btn-pos">ポジション</button>
+    <div class="dual-play">
+      <div class="progress"><i id="bar"></i></div>
+      <div class="n-row">
+        <span>N = ${n}</span>
+        <span class="sound-now" id="sound-now"> </span>
+      </div>
+      <div id="grid-slot"></div>
+      <div class="dual-btns">
+        <button type="button" id="btn-sound">サウンド</button>
+        <button type="button" id="btn-pos">ポジション</button>
+      </div>
     </div>
   `;
   renderGrid(root.querySelector("#grid-slot"));
@@ -153,14 +156,14 @@ function pickValue(seq, i, n, size) {
   return v;
 }
 
-/** 点数をまとめて返す */
-function finishDual(hits, n, onDone) {
+/** 点数を保存し、次へ進める */
+function finishDual(hits, n, onDone, onNext, root) {
   const points = hits.total ? Math.round((100 * hits.ok) / hits.total) : 0;
   onDone({
     game: "reverse",
     points,
     maxPoints: 100,
-    message: `${hits.ok} / ${hits.total} 正解`,
-    detail: `N = ${n}　サウンドとポジション`,
+    stay: true,
   });
+  renderNext(root, onNext);
 }
