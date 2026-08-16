@@ -1,7 +1,7 @@
-import { saveScore, loadScores } from "./scores.js?v=20";
-import { startFlash } from "./games/flash.js?v=20";
-import { startReverse } from "./games/reverse.js?v=20";
-import { startNback } from "./games/nback.js?v=20";
+import { saveScore, loadScores } from "./scores.js?v=21";
+import { startFlash } from "./games/flash.js?v=21";
+import { startReverse } from "./games/reverse.js?v=21";
+import { startNback } from "./games/nback.js?v=21";
 
 const GAMES = {
   flash: { title: "フラッシュ暗算", start: startFlash },

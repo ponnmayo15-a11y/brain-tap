@@ -1,6 +1,6 @@
-import { waitOrAbort, buzz } from "../wait.js?v=20";
-import { renderPad, renderNext } from "../ui.js?v=20";
-import { loadSettings, saveSettings, clampHide } from "../settings.js?v=20";
+import { waitOrAbort, buzz } from "../wait.js?v=21";
+import { renderPad } from "../ui.js?v=21";
+import { loadSettings, saveSettings, clampHide } from "../settings.js?v=21";
 
 /** 逆唱。行数と表示時間を選んでスタート。番号は1回だけ出す */
 export function startReverse(root, { onDone, signal }) {
@@ -76,9 +76,8 @@ export function startReverse(root, { onDone, signal }) {
     let done = false;
     renderPad(root.querySelector("#pad-slot"), {
       prefix: " ",
-      hideOk: true,
-      onDigit: (value) => {
-        if (done || value.length < nums.length) return;
+      onOk: (value) => {
+        if (done) return;
         done = true;
         afterAnswer(value, expected);
       },
@@ -98,9 +97,9 @@ export function startReverse(root, { onDone, signal }) {
     root.innerHTML = `
       <p class="judge-mark ${ok ? "is-ok" : "is-ng"}">${ok ? "○" : "×"}</p>
       <p class="judge-answer">正解 ${expected.split("").join(" ")}</p>
-      <div id="next-slot"></div>
+      <button type="button" class="btn-start" id="btn-next">次</button>
     `;
-    renderNext(root.querySelector("#next-slot"), () => runPlay());
+    root.querySelector("#btn-next").addEventListener("click", () => runPlay());
   }
 }
 
