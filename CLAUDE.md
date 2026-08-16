@@ -10,7 +10,7 @@ Googleログインすると点数はクラウドに残り、別の端末でも�
 npm start
 ```
 
-ブラウザで `http://localhost:5175` を開く。スマホで見るときは、同じWi-Fiのパソコンのアドレスを使う。
+ブラウザで `http://localhost:5175` を開く。公開ページは `https://ponnmayo15-a11y.github.io/brain-tap/` 。QRは `qr.html` 。
 
 ## プロジェクト構成
 
@@ -19,6 +19,8 @@ brain-tap/
 ├── CLAUDE.md
 ├── package.json
 ├── index.html
+├── qr.html                 ← 公開ページのQRコード
+├── qr.png
 ├── css/style.css
 ├── js/
 │   ├── app.js              ← 画面の切り替え

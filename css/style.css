@@ -101,6 +101,7 @@ body {
 .menu-main {
   background: var(--ink);
   color: var(--num);
+  text-decoration: none;
 }
 
 .menu-main small {
@@ -244,6 +245,20 @@ body {
 
 .nb-grid i.is-on {
   background: var(--gold);
+}
+
+.qr-preview {
+  display: block;
+  width: min(100%, 320px);
+  margin: 8px auto 12px;
+  background: #fff;
+  border-radius: 16px;
+}
+
+.qr-url {
+  text-align: center;
+  word-break: break-all;
+  margin: 0 0 20px;
 }
 
 @media (min-width: 800px) {
